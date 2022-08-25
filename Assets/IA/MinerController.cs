@@ -13,6 +13,7 @@ public class MinerController : MonoBehaviour
 
     [SerializeField] private GameObject mine = null;
     [SerializeField] private GameObject deposit = null;
+    [SerializeField] private GameObject repose = null;
     #endregion
 
     #region PRIVATE_FIELDS
@@ -32,7 +33,7 @@ public class MinerController : MonoBehaviour
             minerGO.transform.position = mineStartPos.position;
 
             Miner miner = minerGO.GetComponent<Miner>();
-            miner.Init(mine, deposit);
+            miner.Init(mine, deposit, repose);
             miner.StartMiner();
 
             miners.Add(miner);
@@ -45,6 +46,22 @@ public class MinerController : MonoBehaviour
         {
             minedou.UpdateMiner();
         });
+
+        GoMinerToRepose();
+    }
+    #endregion
+
+    #region PRIVATE_METHODS
+    private void GoMinerToRepose()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Miner miner;
+            if (miners.TryPeek(out miner))
+            {
+                miner.GoToRepose();
+            };
+        }
     }
     #endregion
 }

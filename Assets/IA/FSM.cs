@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
+public class State
+{
+    public List<Action> behaviours;
+    public Action onAbruptExit;
+}
+
 public class FSM
 {
     private int currentState;
     private int[,] relations;
-    private Dictionary<int, List<Action>> behaviours;
+    private Dictionary<int, State> behaviours;
 
     public FSM(int states, int flags)
     {
@@ -16,7 +22,7 @@ public class FSM
             for (int j = 0; j < flags; j++)
                 relations[i, j] = -1;
 
-        behaviours = new Dictionary<int, List<Action>>();
+        behaviours = new Dictionary<int, State>();
     }
 
     public void ForceCurretState(int state)
@@ -40,27 +46,40 @@ public class FSM
         return currentState;
     }
 
-    public void SetBehaviour(int state, Action behaviour)
+    public void SetBehaviour(int state, Action behaviour, Action onExitBehaviour = null)
     {
-        List<Action> newBehaviours = new List<Action>();
-        newBehaviours.Add(behaviour);
+        State newState = new State();
+        newState.behaviours = new List<Action>();
+        newState.behaviours.Add(behaviour);
+        newState.onAbruptExit = onExitBehaviour;
 
         if (behaviours.ContainsKey(state))
-            behaviours[state] = newBehaviours;
+            behaviours[state] = newState;
         else
-            behaviours.Add(state, newBehaviours);
+            behaviours.Add(state, newState);
     }
 
-    public void AddBehaviour(int state, Action behaviour)
+    public void AddBehaviour(int state, Action behaviour, Action onExitBehaviour = null)
     {
-
         if (behaviours.ContainsKey(state))
-            behaviours[state].Add(behaviour);
+            behaviours[state].behaviours.Add(behaviour);
         else
         {
-            List<Action> newBehaviours = new List<Action>();
-            newBehaviours.Add(behaviour);
-            behaviours.Add(state, newBehaviours);
+            State newState = new State();
+            newState.behaviours = new List<Action>();
+            newState.behaviours.Add(behaviour);
+            newState.onAbruptExit = onExitBehaviour;
+
+            behaviours.Add(state, newState);
+        }
+    }
+
+    public void Exit()
+    {
+        if (behaviours.ContainsKey(currentState))
+        {
+            Action onExit = behaviours[currentState].onAbruptExit;
+            onExit?.Invoke();
         }
     }
 
@@ -68,7 +87,7 @@ public class FSM
     {
         if (behaviours.ContainsKey(currentState))
         {
-            List<Action> actions = behaviours[currentState];
+            List<Action> actions = behaviours[currentState].behaviours;
             if (actions != null)
             {
                 for (int i = 0; i < actions.Count; i++)
