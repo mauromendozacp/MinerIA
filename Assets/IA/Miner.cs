@@ -3,9 +3,10 @@
 public class Miner : MonoBehaviour
 {
     #region PRIVATE_FIELDS
-    private GameObject mine;
-    private GameObject deposit;
-    private GameObject repose;
+    public Vector3 minePos = Vector3.zero;
+    public Vector3 depositPos = Vector3.zero;
+    public Vector3 reposePos = Vector3.zero;
+
     private FSM fsm;
 
     private int mineUses = 10;
@@ -13,6 +14,11 @@ public class Miner : MonoBehaviour
     private float reposingTime = 5.0f;
     private float currentMiningTime = 0.0f;
     private float currentReposingTime = 0.0f;
+
+    public Vector3 pos = Vector3.zero;
+    public bool posFlag = false;
+
+    public float deltaTime = 0f;
     #endregion
 
     #region ENUMS
@@ -42,12 +48,27 @@ public class Miner : MonoBehaviour
     }
     #endregion
 
+    #region UNITY_CALLS
+    private void Update()
+    {
+        if (posFlag)
+        {
+            transform.position = pos;
+            posFlag = false;
+        }
+
+        deltaTime = Time.deltaTime;
+    }
+    #endregion
+
     #region PUBLIC_METHODS
     public void Init(GameObject mine, GameObject deposit, GameObject repose)
     {
-        this.mine = mine;
-        this.deposit = deposit;
-        this.repose = repose;
+        minePos = mine.transform.position;
+        depositPos = deposit.transform.position;
+        reposePos = repose.transform.position;
+
+        pos = transform.position;
     }
 
     public void StartMiner()
@@ -75,7 +96,7 @@ public class Miner : MonoBehaviour
         {
             if (currentMiningTime < miningTime)
             {
-                currentMiningTime += Time.deltaTime;
+                currentMiningTime += deltaTime;
             }
             else
             {
@@ -90,12 +111,12 @@ public class Miner : MonoBehaviour
 
         fsm.AddBehaviour((int)States.GoToMine, () =>
         {
-            Vector2 dir = (mine.transform.position - transform.position).normalized;
+            Vector2 dir = (minePos - pos).normalized;
 
-            if (Vector2.Distance(mine.transform.position, transform.position) > 1.0f)
+            if (Vector2.Distance(minePos, pos) > 1.0f)
             {
-                Vector2 movement = dir * 10.0f * Time.deltaTime;
-                transform.position += new Vector3(movement.x, movement.y);
+                Vector2 movement = dir * 10.0f * deltaTime;
+                SetPosition(pos += new Vector3(movement.x, movement.y));
             }
             else
             {
@@ -108,12 +129,12 @@ public class Miner : MonoBehaviour
 
         fsm.AddBehaviour((int)States.GoToDeposit, () =>
         {
-            Vector2 dir = (deposit.transform.position - transform.position).normalized;
+            Vector2 dir = (depositPos - pos).normalized;
 
-            if (Vector2.Distance(deposit.transform.position, transform.position) > 1.0f)
+            if (Vector2.Distance(depositPos, pos) > 1.0f)
             {
-                Vector2 movement = dir * 10.0f * Time.deltaTime;
-                transform.position += new Vector3(movement.x, movement.y);
+                Vector2 movement = dir * 10.0f * deltaTime;
+                SetPosition(pos += new Vector3(movement.x, movement.y));
             }
             else
             {
@@ -122,19 +143,20 @@ public class Miner : MonoBehaviour
                 else
                     fsm.SetFlag((int)Flags.OnReachDeposit);
             }
-        }, () =>
+        }, 
+        () =>
         {
             fsm.SetFlag((int)Flags.OnStopMine);
         });
 
         fsm.AddBehaviour((int)States.GoToRepose, () =>
         {
-            Vector2 dir = (repose.transform.position - transform.position).normalized;
+            Vector2 dir = (reposePos - pos).normalized;
 
-            if (Vector2.Distance(repose.transform.position, transform.position) > 1.0f)
+            if (Vector2.Distance(reposePos, pos) > 1.0f)
             {
-                Vector2 movement = dir * 10.0f * Time.deltaTime;
-                transform.position += new Vector3(movement.x, movement.y);
+                Vector2 movement = dir * 10.0f * deltaTime;
+                SetPosition(pos += new Vector3(movement.x, movement.y));
             }
             else
             {
@@ -146,7 +168,7 @@ public class Miner : MonoBehaviour
         {
             if (currentReposingTime < reposingTime)
             {
-                currentReposingTime += Time.deltaTime;
+                currentReposingTime += deltaTime;
             }
             else
             {
@@ -164,6 +186,12 @@ public class Miner : MonoBehaviour
     public void GoToRepose()
     {
         fsm.SetFlag((int)Flags.OnStopMine);
+    }
+
+    public void SetPosition(Vector3 pos)
+    {
+        this.pos = pos;
+        posFlag = true;
     }
     #endregion
 }

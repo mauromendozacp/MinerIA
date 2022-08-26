@@ -56,8 +56,7 @@ public class MinerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Miner miner;
-            if (miners.TryPeek(out miner))
+            if (miners.TryPeek(out Miner miner))
             {
                 miner.GoToRepose();
             };
