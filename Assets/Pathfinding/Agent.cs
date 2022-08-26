@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,12 +11,15 @@ public class Agent : MonoBehaviour
     #endregion
 
     #region PRIVATE_METHODS
+    private Action<Vector2Int> onTarget = null;
     private List<Vector2Int> path = null;
     #endregion
 
     #region PUBLIC_METHODS
-    public void StartPathfiding(List<Vector2Int> path)
+    public void StartPathfiding(List<Vector2Int> path, Action<Vector2Int> onTarget)
     {
+        this.onTarget = onTarget;
+
         if (path != null)
         {
             this.path = path;
@@ -43,6 +47,8 @@ public class Agent : MonoBehaviour
             }
 
             transform.position = targetPos;
+            onTarget?.Invoke(path[i]);
+
             yield return new WaitForSeconds(positionDelay);
         }
     }

@@ -43,7 +43,7 @@ public class NodeGenerator : MonoBehaviour
 
         for (int i = 0; i < blockeds.Count; i++)
         {
-            map[NodeUtils.PositionToIndex(blockeds[i])].state = Node.NodeState.Blocked;
+            map[NodeUtils.PositionToIndex(blockeds[i])].Block();
         }
         for (int i = 0; i < weights.Count; i++)
         {
@@ -53,7 +53,14 @@ public class NodeGenerator : MonoBehaviour
 
     private void Start()
     {
-        agent.StartPathfiding(GetPath(origin, destination));
+        List<Vector2Int> path = GetPath(origin, destination);
+        if (path != null)
+        {
+            map[NodeUtils.PositionToIndex(origin)].color = Color.yellow;
+            map[NodeUtils.PositionToIndex(destination)].color = Color.cyan;
+
+            agent.StartPathfiding(path, SetWalkedColor);
+        }
     }
 
     private void OnDrawGizmos()
@@ -65,12 +72,19 @@ public class NodeGenerator : MonoBehaviour
 
         foreach (Node node in map)
         {
-            Gizmos.color = GetGizmosColor(node.state);
+            Gizmos.color = node.color;
 
             Vector3 worldPosition = new Vector3(node.position.x, node.position.y, 0.0f);
             Gizmos.DrawWireSphere(worldPosition, 0.2f);
             Handles.Label(worldPosition, node.position.ToString(), style);
         }
+    }
+    #endregion
+
+    #region PUBLIC_METHODS
+    public void SetWalkedColor(Vector2Int position)
+    {
+        map[NodeUtils.PositionToIndex(position)].color = Color.magenta;
     }
     #endregion
 
@@ -80,25 +94,6 @@ public class NodeGenerator : MonoBehaviour
         return pathfinding.GetPath(map,
             map[NodeUtils.PositionToIndex(origin)],
             map[NodeUtils.PositionToIndex(destination)]);
-    }
-
-    private Color GetGizmosColor(Node.NodeState state)
-    {
-        Color color = Color.white;
-
-        switch (state)
-        {
-            case Node.NodeState.Open: color = Color.green;
-                break;
-            case Node.NodeState.Closed: color = Color.blue;
-                break;
-            case Node.NodeState.Blocked: color = Color.red;
-                break;
-            case Node.NodeState.Ready: color = Color.white;
-                break;
-        }
-
-        return color;
     }
     #endregion
 }

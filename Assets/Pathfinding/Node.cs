@@ -20,6 +20,18 @@ public class Node
         public Vector2Int position;
         public int weight;
     }
+
+    public struct NodeCustom
+    {
+        public Vector2Int position;
+        public Color color;
+
+        public NodeCustom(Vector2Int position, Color color)
+        {
+            this.position = position;
+            this.color = color;
+        }
+    }
     #endregion
 
     #region PUBLIC_FIELDS
@@ -27,6 +39,7 @@ public class Node
     public Vector2Int position;
     public List<int> adjacentNodeIDs;
     public NodeState state;
+    public Color color;
     public int openerID;
     public int weight;
     public int totalWight;
@@ -41,6 +54,7 @@ public class Node
 
         adjacentNodeIDs = NodeUtils.GetAdjacentsNodeIDs(position);
         state = NodeState.Ready;
+        color = Color.white;
         openerID = -1;
         weight = 1;
         totalWight = 1;
@@ -54,7 +68,19 @@ public class Node
         this.openerID = openerID;
 
         state = NodeState.Open;
+        color = Color.green;
         totalWight = weight + parentWight;
+    }
+
+    public void Close()
+    {
+        state = NodeState.Closed;
+        color = Color.blue;
+    }
+    public void Block()
+    {
+        state = NodeState.Blocked;
+        color = Color.red;
     }
 
     public void Reset()

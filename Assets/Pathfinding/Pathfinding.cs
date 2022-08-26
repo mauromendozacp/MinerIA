@@ -59,7 +59,7 @@ public class Pathfinding
                 }
             }
 
-            currentNode.state = Node.NodeState.Closed;
+            currentNode.Close();
             openedNodeIds.Remove(currentNode.ID);
             closedNodeIds.Add(currentNode.ID);
         }
