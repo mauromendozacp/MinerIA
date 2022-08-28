@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
+using IA.PathfindingIA;
+
 namespace IA.MinerPathfinding
 {
     #region STRUCTS

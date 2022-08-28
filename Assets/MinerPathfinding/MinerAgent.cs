@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
+
 using UnityEngine;
+
+using IA.Miner;
+using IA.PathfindingIA;
 
 namespace IA.MinerPathfinding
 {
