@@ -26,10 +26,8 @@ public class NodeGenerator : MonoBehaviour
     #region UNITY_CALLS
     private void Awake()
     {
-        pathfinding = new Pathfinding(pathfindingMode);
-        map = new Node[mapSize.x * mapSize.y];
-
         NodeUtils.MapSize = mapSize;
+        map = new Node[mapSize.x * mapSize.y];
 
         int ID = 0;
         for (int i = 0; i < mapSize.y; i++)
@@ -49,6 +47,8 @@ public class NodeGenerator : MonoBehaviour
         {
             map[NodeUtils.PositionToIndex(weights[i].position)].SetWeight(weights[i].weight);
         }
+
+        pathfinding = new Pathfinding(pathfindingMode, map);
     }
 
     private void Start()
@@ -65,6 +65,7 @@ public class NodeGenerator : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        Node[] map = pathfinding.GetMap();
         if (map == null)
             return;
 
@@ -91,7 +92,7 @@ public class NodeGenerator : MonoBehaviour
     #region PRIVATE_METHODS
     private List<Vector2Int> GetPath(Vector2Int origin, Vector2Int destination)
     {
-        return pathfinding.GetPath(map,
+        return pathfinding.GetPath(
             map[NodeUtils.PositionToIndex(origin)],
             map[NodeUtils.PositionToIndex(destination)]);
     }

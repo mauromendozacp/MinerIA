@@ -42,7 +42,7 @@ public class Node
     public Color color;
     public int openerID;
     public int weight;
-    public int totalWight;
+    public int totalWeight;
     private int originalWeight;
     #endregion
 
@@ -57,7 +57,7 @@ public class Node
         color = Color.white;
         openerID = -1;
         weight = 1;
-        totalWight = 1;
+        totalWeight = weight;
         originalWeight = weight;
     }
     #endregion
@@ -69,7 +69,7 @@ public class Node
 
         state = NodeState.Open;
         color = Color.green;
-        totalWight = weight + parentWight;
+        totalWeight = weight + parentWight;
     }
 
     public void Close()
@@ -90,6 +90,7 @@ public class Node
             state = NodeState.Ready;
             openerID = -1;
             weight = originalWeight;
+            totalWeight = weight;
         }
     }
 

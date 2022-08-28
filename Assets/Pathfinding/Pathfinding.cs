@@ -15,6 +15,7 @@ public class Pathfinding
     #endregion
 
     #region PRIVATE_FIELDS
+    private Node[] map = null;
     private MODE mode = default;
 
     private List<int> openedNodeIds = null;
@@ -24,18 +25,21 @@ public class Pathfinding
     #endregion
 
     #region CONSTRUCTS
-    public Pathfinding(MODE mode)
+    public Pathfinding(MODE mode, Node[] map)
     {
         this.mode = mode;
 
+        this.map = map;
         openedNodeIds = new List<int>();
         closedNodeIds = new List<int>();
     }
     #endregion
 
     #region PUBLIC_METHODS
-    public List<Vector2Int> GetPath(Node[] map, Node origin, Node destination)
+    public List<Vector2Int> GetPath(Node origin, Node destination)
     {
+        Reset();
+
         openedNodeIds.Add(origin.ID);
         destinationPos = destination.position;
 
@@ -53,7 +57,7 @@ public class Pathfinding
                 {
                     if (map[currentNode.adjacentNodeIDs[i]].state == Node.NodeState.Ready)
                     {
-                        map[currentNode.adjacentNodeIDs[i]].Open(currentNode.ID, currentNode.totalWight);
+                        map[currentNode.adjacentNodeIDs[i]].Open(currentNode.ID, currentNode.totalWeight);
                         openedNodeIds.Add(map[currentNode.adjacentNodeIDs[i]].ID);
                     }
                 }
@@ -67,9 +71,25 @@ public class Pathfinding
         List<Vector2Int> path = GeneratePath(map, currentNode);
         return path;
     }
+
+    public Node[] GetMap()
+    {
+        return map;
+    }
     #endregion
 
     #region PRIVATE_METHODS
+    private void Reset()
+    {
+        foreach (Node node in map)
+        {
+            node.Reset();
+        }
+
+        openedNodeIds.Clear();
+        closedNodeIds.Clear();
+    }
+
     private List<Vector2Int> GeneratePath(Node[] map, Node current)
     {
         List<Vector2Int> path = new List<Vector2Int>();
@@ -103,10 +123,10 @@ public class Pathfinding
 
                     for (int i = 0; i < openedNodeIds.Count; i++)
                     {
-                        if (map[openedNodeIds[i]].totalWight < currentMaxWeight)
+                        if (map[openedNodeIds[i]].totalWeight < currentMaxWeight)
                         {
                             node = map[openedNodeIds[i]];
-                            currentMaxWeight = map[openedNodeIds[i]].totalWight;
+                            currentMaxWeight = map[openedNodeIds[i]].totalWeight;
                         }
                     }
 
@@ -120,10 +140,10 @@ public class Pathfinding
 
                     for (int i = 0; i < openedNodeIds.Count; i++)
                     {
-                        if (map[openedNodeIds[i]].totalWight + GetManhattanDistance(map[openedNodeIds[i]].position, destinationPos) < currentWeightAndDistanceMax)
+                        if (map[openedNodeIds[i]].totalWeight + GetManhattanDistance(map[openedNodeIds[i]].position, destinationPos) < currentWeightAndDistanceMax)
                         {
                             node = map[openedNodeIds[i]];
-                            currentWeightAndDistanceMax = map[openedNodeIds[i]].totalWight + GetManhattanDistance(map[openedNodeIds[i]].position, destinationPos);
+                            currentWeightAndDistanceMax = map[openedNodeIds[i]].totalWeight + GetManhattanDistance(map[openedNodeIds[i]].position, destinationPos);
                         }
                     }
 
