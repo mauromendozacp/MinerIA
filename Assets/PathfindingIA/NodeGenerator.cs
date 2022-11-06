@@ -67,6 +67,7 @@ namespace IA.PathfindingIA
 
         private void OnDrawGizmos()
         {
+#if UNITY_EDITOR
             if (map == null)
                 return;
 
@@ -80,6 +81,7 @@ namespace IA.PathfindingIA
                 Gizmos.DrawWireSphere(worldPosition, 0.2f);
                 Handles.Label(worldPosition, node.position.ToString(), style);
             }
+#endif
         }
         #endregion
 
